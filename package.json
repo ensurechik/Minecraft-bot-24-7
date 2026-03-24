@@ -1,0 +1,13 @@
+{
+  "name": "mc-bot",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "cd dashboard && npm install && npm run build",
+    "start": "cd dashboard && npm start",
+    "dev": "cd dashboard && npm run dev"
+  }
+}
