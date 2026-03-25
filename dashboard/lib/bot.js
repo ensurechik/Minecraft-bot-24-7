@@ -115,8 +115,25 @@ function startBot(id) {
   });
 
   bot.on("chat", (username, message) => addLog(id, "[CHAT] " + username + ": " + message));
-  bot.on("error", (err) => { b._status = "disconnected"; addLog(id, "Error: " + err.message); scheduleReconnect(id); });
-  bot.on("end", (reason) => { b._status = "disconnected"; clearInterval(b._hourTimer); addLog(id, "Disconnected: " + reason); scheduleReconnect(id); });
+
+  bot.on("kicked", (reason, loggedIn) => {
+    let readable = reason;
+    try { readable = JSON.parse(reason)?.text || JSON.parse(reason)?.translate || reason; } catch (_) {}
+    addLog(id, "[KICKED] reason=" + readable + " loggedIn=" + loggedIn);
+  });
+
+  bot.on("error", (err) => {
+    b._status = "disconnected";
+    addLog(id, "[ERROR] code=" + (err.code || "unknown") + " msg=" + err.message);
+    scheduleReconnect(id);
+  });
+
+  bot.on("end", (reason) => {
+    b._status = "disconnected";
+    clearInterval(b._hourTimer);
+    addLog(id, "[END] reason=" + (reason || "socketClosed") + " time=" + new Date().toISOString());
+    scheduleReconnect(id);
+  });
 }
 
 function init() {
